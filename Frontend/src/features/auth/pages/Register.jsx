@@ -1,14 +1,18 @@
 import React, { useState } from 'react'
-
+import { useAuth } from '../hooks/useAuth'
+import { useNavigate } from 'react-router'
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-
-  const handleSubmit = (e) => {
+  const [username, setUsername] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const {loading, handleRegister} = useAuth()
+  const nevigate = useNavigate()
+  
+  const handleSubmit = async (e) => {
     e.preventDefault()
-
     const formData = new FormData(e.currentTarget)
-    const password = formData.get('password')
     const confirmPassword = formData.get('confirmPassword')
 
     if (password !== confirmPassword) {
@@ -16,9 +20,16 @@ const Register = () => {
       return
     }
 
-    // Connect your registration API here
-    alert('Registration form submitted successfully!')
+    await handleRegister({username, email, password})
+    nevigate('/')
   }
+
+  if(loading){
+    return (
+      <main><h1>Register pafhe</h1></main>
+    )
+  } 
+
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-linear-to-br from-indigo-100 via-white to-purple-100 px-4 py-10">
@@ -49,6 +60,7 @@ const Register = () => {
             </label>
 
             <input
+              onChange={(e) => {setUsername(e.target.value)}}
               type="text"
               id="username"
               name="username"
@@ -69,6 +81,7 @@ const Register = () => {
             </label>
 
             <input
+              onChange={(e) => {setEmail(e.target.value)}}
               type="email"
               id="email"
               name="email"
@@ -89,6 +102,7 @@ const Register = () => {
 
             <div className="relative">
               <input
+                onChange={(e) => {setPassword(e.target.value)}}
                 type={showPassword ? 'text' : 'password'}
                 id="password"
                 name="password"
